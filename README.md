@@ -1,10 +1,10 @@
 # AI Physio Investor Prototype
 
-React + FastAPI prototype with live MediaPipe pose tracking and investor-focused outcome storytelling.
+React + FastAPI prototype with live MediaPipe pose tracking and investor-focused rehab metrics.
 
 ## Structure
 
-- `frontend/` React + Vite web app (5 screens, no-login demo)
+- `frontend/` React + Vite web app (onboarding, live session, progress dashboard)
 - `backend/` FastAPI APIs for assessment, sessions, scoring, progress, triage, outcomes
 
 ## Local run
@@ -14,7 +14,7 @@ React + FastAPI prototype with live MediaPipe pose tracking and investor-focused
 ```bash
 cd backend
 python -m venv .venv
-.venv\\Scripts\\activate
+.venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
@@ -30,20 +30,44 @@ npm run dev
 Set `frontend/.env`:
 
 ```bash
-VITE_API_BASE=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8000
 ```
 
-## Deploy
+## Railway deployment (both frontend + backend)
 
-- Frontend: Vercel (`frontend/` project root)
-- Backend: Render Web Service
-  - Build: `pip install -r requirements.txt`
-  - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+Create one Railway project with two services from this same repo.
 
-## Demo flow
+### 1. Backend service
 
-1. Landing
-2. Onboarding (choose squat or shoulder abduction)
-3. Live camera session with pose overlay and feedback
-4. Progress dashboard
-5. Stakeholder outcomes view
+- Root directory: `backend`
+- Builder: Dockerfile (auto-detected)
+- Exposed port: use Railway `PORT` env (already handled)
+- Start command: handled by `backend/Dockerfile`
+
+Backend env vars:
+
+```bash
+CORS_ORIGINS=https://<your-frontend-domain>.up.railway.app
+```
+
+For multiple frontend domains, comma-separate values.
+
+### 2. Frontend service
+
+- Root directory: `frontend`
+- Builder: Dockerfile (auto-detected)
+- Start command: handled by `frontend/Dockerfile`
+
+Frontend env vars:
+
+```bash
+VITE_API_BASE_URL=https://<your-backend-domain>.up.railway.app
+```
+
+### 3. Redeploy frontend after backend URL is available
+
+After backend is live and you set `VITE_API_BASE_URL`, trigger a frontend redeploy so Vite rebuilds with the correct API URL.
+
+## API health check
+
+- `GET /health` should return `{ "status": "ok" }`

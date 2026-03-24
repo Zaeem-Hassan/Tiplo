@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from statistics import mean
 
 from fastapi import FastAPI, HTTPException
@@ -24,10 +25,16 @@ from .store import store
 
 app = FastAPI(title="AI Physio Prototype API", version="0.1.0")
 
+raw_origins = os.getenv("CORS_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+if not allowed_origins:
+    allowed_origins = ["*"]
+allow_credentials = allowed_origins != ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=allowed_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
