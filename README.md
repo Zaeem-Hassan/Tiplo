@@ -4,7 +4,7 @@ React + FastAPI prototype with live MediaPipe pose tracking and investor-focused
 
 ## Structure
 
-- `frontend/` React + Vite web app (onboarding, live session, progress dashboard)
+- `frontend/` React + Vite web app 
 - `backend/` FastAPI APIs for assessment, sessions, scoring, progress, triage, outcomes
 
 ## Local run
